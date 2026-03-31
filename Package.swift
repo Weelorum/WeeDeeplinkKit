@@ -9,8 +9,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "WeeDeeplinkKit",
-            url: "https://github.com/Weelorum/WeeDeeplinkKit/releases/download/1.0.0/WeeDeeplinkKit.xcframework.zip",
-            checksum: "262e4be33af286efb11c58c925afcebf3c648a05ef2680b9ae89f430f31e0586"
+            url: "https://github.com/Weelorum/WeeDeeplinkKit/releases/download/1.0.1/WeeDeeplinkKit.xcframework.zip",
+            checksum: "584a4452d30e021141bccc7a3ae2dafdf08fef0d0f8bae76ba8d26cefb40b008"
         )
     ]
 )
