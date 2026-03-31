@@ -31,7 +31,7 @@ Call this early in your app's lifecycle (e.g. `application(_:didFinishLaunchingW
 ```swift
 import WeeDeeplinkKit
 
-WeeDeeplinkKit.shared.configure(
+WeeDeeplinkSDK.shared.configure(
     apiKey: "dk_live_xxx",
     apiSecret: "sk_live_xxx"
 )
@@ -39,7 +39,7 @@ WeeDeeplinkKit.shared.configure(
 
 An optional `baseURL` parameter is available if you need to point to a custom endpoint (default: `https://api.wee-kit.app/api/v1`):
 ```swift
-WeeDeeplinkKit.shared.configure(
+WeeDeeplinkSDK.shared.configure(
     apiKey: "dk_live_xxx",
     apiSecret: "sk_live_xxx",
     baseURL: "https://custom.endpoint.com/api/v1"
@@ -51,7 +51,7 @@ WeeDeeplinkKit.shared.configure(
 Call on each app launch to register the device and receive SDK configuration:
 ```swift
 Task {
-    let response = try await WeeDeeplinkKit.shared.trackInstall()
+    let response = try await WeeDeeplinkSDK.shared.trackInstall()
     print("Is new install: \(response.isNewInstall)")
     print("Deep links enabled: \(response.config.features.deepLinks)")
 }
@@ -73,7 +73,7 @@ Task {
 Call after launch to check if the user arrived via a deep link clicked before the app was installed. The SDK collects a privacy-preserving device fingerprint (hashed IP with a daily rotating salt, screen dimensions, language, and timezone) and sends it to the attribution endpoint.
 ```swift
 Task {
-    let attribution = try await WeeDeeplinkKit.shared.checkAttribution()
+    let attribution = try await WeeDeeplinkSDK.shared.checkAttribution()
     if attribution.matched, let link = attribution.link {
         navigateTo(link.deepPath, customData: link.customData)
     }
@@ -102,7 +102,7 @@ func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
           let url = userActivity.webpageURL else { return }
 
-    if let data = WeeDeeplinkKit.shared.handleUniversalLink(url) {
+    if let data = WeeDeeplinkSDK.shared.handleUniversalLink(url) {
         navigateTo(data.deepPath, customData: data.customData)
     }
 }
@@ -125,7 +125,7 @@ func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
 All async methods throw `WeeKitError`:
 ```swift
 do {
-    let attribution = try await WeeDeeplinkKit.shared.checkAttribution()
+    let attribution = try await WeeDeeplinkSDK.shared.checkAttribution()
 } catch WeeKitError.notConfigured {
     // Call configure() first
 } catch WeeKitError.apiError(let statusCode, let message) {
