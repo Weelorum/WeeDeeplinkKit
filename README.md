@@ -42,7 +42,7 @@ An optional `baseURL` parameter is available if you need to point to a custom en
 WeeDeeplinkSDK.shared.configure(
     apiKey: "dk_live_xxx",
     apiSecret: "sk_live_xxx",
-    baseURL: "https://custom.endpoint.com/api/v1"
+    baseURL: "https://custom.endpoint.com/api/v1/"
 )
 ```
 
