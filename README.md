@@ -37,7 +37,7 @@ WeeDeeplinkSDK.shared.configure(
 )
 ```
 
-An optional `baseURL` parameter is available if you need to point to a custom endpoint (default: `https://api.wee-kit.app/api/v1`):
+An optional `baseURL` parameter is available if you need to point to a custom endpoint (default: `https://api.wee-kit.app/api/v1/`):
 ```swift
 WeeDeeplinkSDK.shared.configure(
     apiKey: "dk_live_xxx",
@@ -70,7 +70,7 @@ Task {
 
 ### 3. Check Deferred Deep Link Attribution
 
-Call after launch to check if the user arrived via a deep link clicked before the app was installed. The SDK collects a privacy-preserving device fingerprint (hashed IP with a daily rotating salt, screen dimensions, language, and timezone) and sends it to the attribution endpoint.
+Call after launch to check if the user arrived via a deep link clicked before the app was installed. The SDK collects a device fingerprint (screen dimensions, language, and timezone) and sends it to the attribution endpoint.
 ```swift
 Task {
     let attribution = try await WeeDeeplinkSDK.shared.checkAttribution()
