@@ -94,6 +94,8 @@ Task {
 
 ### 4. Handle Universal Links
 
+Call this when the app is already installed and iOS opens it via a Universal Link. The SDK resolves the full link data (including `customData` and `utmParams` as configured in the dashboard) from the backend.
+
 **SceneDelegate:**
 ```swift
 import WeeDeeplinkKit
@@ -102,23 +104,30 @@ func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
     guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
           let url = userActivity.webpageURL else { return }
 
-    if let data = WeeDeeplinkSDK.shared.handleUniversalLink(url) {
-        navigateTo(data.deepPath, customData: data.customData)
+    Task {
+        do {
+            let response = try await WeeDeeplinkSDK.shared.handleUniversalLink(url)
+            if response.matched, let link = response.link {
+                await MainActor.run {
+                    navigateTo(link.deepPath, customData: link.customData)
+                }
+            }
+        } catch {
+            print("Deep link resolution failed: \(error)")
+        }
     }
 }
 ```
 
-`handleUniversalLink(_:)` returns `DeepLinkData?` with the following fields:
+`handleUniversalLink(_:)` returns `AttributionResponse` (same shape as `checkAttribution`).
 
 | Field | Type | Description |
 |---|---|---|
-| `deepPath` | `String` | Full URL path (e.g. `/product/123`) |
-| `shortCode` | `String` | First path component of the URL |
-| `title` | `String?` | Link title |
-| `customData` | `[String: String]?` | Non-UTM query parameters |
-| `utmParams` | `UTMParams?` | UTM tracking parameters |
-
-`UTMParams` contains `source?`, `medium?`, `campaign?`, `term?`, and `content?`.
+| `matched` | `Bool` | Whether the link was resolved |
+| `link` | `AttributedLink?` | Full link data from the dashboard |
+| `matchConfidence` | `Int?` | Confidence score |
+| `clickTimestamp` | `String?` | When the link was clicked |
+| `timeToAttribution` | `Int?` | Seconds between click and open |
 
 ## Error Handling
 
@@ -138,7 +147,7 @@ do {
 | Case | Description |
 |---|---|
 | `notConfigured` | `configure()` was not called before using the SDK |
-| `invalidURL` | Malformed base URL passed to `configure()` |
+| `invalidURL` | Malformed base URL passed to `configure()`, or Universal Link URL has no path component |
 | `networkError(Error)` | Underlying network failure |
 | `invalidResponse` | Non-HTTP response received |
 | `apiError(statusCode:message:)` | Server returned a non-2xx status |
